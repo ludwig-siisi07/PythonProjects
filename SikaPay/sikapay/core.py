@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime
+import random
 
 class SikaPayWallet:
     def __init__(self):
@@ -78,3 +79,35 @@ class SikaPayWallet:
         
         self.record_tx("Flexi-Bundle", amount, 0.0, "Success", "Self")
         return True, f"{data_mb:.1f} MB Data Bundle successfully purchased.\nNew balance: GHS {self.balance:.1f}"
+
+    def generate_cashout_prompt(self):
+        if not self.merchants:
+            return None, 0
+        merchant = random.choice(list(self.merchants.values()))
+        amount = random.randint(10, 500)
+        return merchant, amount
+
+    def cash_out(self, amount, merchant, pin):
+        if not self.verify_pin(pin):
+            return False, "Invalid PIN."
+            
+        fee = amount * 0.05
+        if self.balance < (amount + fee):
+            return False, "Insufficient funds."
+            
+        self.balance -= (amount + fee)
+        self.record_tx("Cash out", amount, fee, "Success", merchant)
+        return True, (f"Cash Out made for GHS {amount:.2f} to {merchant}. "
+                      f"CashOut Fee GHS{fee:.2f} was charged automatically from your wallet.\n"
+                      f"Current Balance: GHS{self.balance:.2f}")
+
+    def top_up(self, amount):
+        self.balance += amount
+        self.record_tx("Account Topup", amount, 0.0, "Success", "Owner")
+        return True, f"Balance top up is successful. New balance: GHS {self.balance:.1f}"
+
+    def change_pin(self, old_pin, new_pin):
+        if not self.verify_pin(old_pin):
+            return False, "Incorrect current PIN."
+        self.pin = new_pin
+        return True, "MOMO Pin successfully changed!"
