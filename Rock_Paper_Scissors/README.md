@@ -1,4 +1,4 @@
-# Rock Paper Scissors - Python Desktop App
+# Rock Paper Scissors 
 
 i built a simple Rock Paper Scissors game with a graphical user interface (GUI) built entirely using the `tkinter` library.
 
