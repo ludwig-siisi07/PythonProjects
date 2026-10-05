@@ -5,17 +5,20 @@ import random
 class SikaPayWallet:
     def __init__(self):
         self.balance = 1000.0
-        self.pin = "7209"
+        self.pin = "7290"
         self.history = []
         self.customers = self._load_excel("customers.xlsx", "Phone", "Name")
         self.merchants = self._load_excel("merchants.xlsx", "ID", "Name")
 
     def _load_excel(self, filename, key_col, val_col):
-        try:
-            df = pd.read_excel(filename, dtype=str)
-            return dict(zip(df[key_col], df[val_col]))
-        except Exception:
-            return {} 
+            try:
+                df = pd.read_excel(filename, dtype=str)
+                df.columns = df.columns.str.strip()
+                df[key_col] = df[key_col].str.strip()
+                return dict(zip(df[key_col], df[val_col]))
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
+                return {}
 
     def verify_pin(self, pin):
         return self.pin == pin
@@ -35,7 +38,7 @@ class SikaPayWallet:
         if not self.verify_pin(pin):
             return False, "Invalid PIN."
         if phone not in self.customers:
-            return False, "Number not registered on Telestar."
+            return False, "Number not registered on SikaPay."
             
         e_levy = amount * 0.01
         service_charge = amount * 0.004
@@ -66,7 +69,7 @@ class SikaPayWallet:
             
         self.balance -= total_deduction
         merchant = self.merchants[merchant_id]
-        self.record_tx("MOMO Pay", amount, e_levy, "Success", merchant)
+        self.record_tx("SikaPay", amount, e_levy, "Success", merchant)
         return True, (f"GHS {amount:.1f} has been paid successfully to {merchant}, "
                       f"with E-levy charge of GHS {e_levy:.1f}. New balance: GHS {self.balance:.1f}")
 
@@ -110,4 +113,4 @@ class SikaPayWallet:
         if not self.verify_pin(old_pin):
             return False, "Incorrect current PIN."
         self.pin = new_pin
-        return True, "MOMO Pin successfully changed!"
+        return True, "SikaPay Pin successfully changed!"
