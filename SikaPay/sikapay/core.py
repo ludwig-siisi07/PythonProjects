@@ -1,6 +1,5 @@
 import pandas as pd
 from datetime import datetime
-import random
 
 class SikaPayWallet:
     def __init__(self):
@@ -15,7 +14,7 @@ class SikaPayWallet:
             df = pd.read_excel(filename, dtype=str)
             return dict(zip(df[key_col], df[val_col]))
         except Exception:
-            return {} # Failsafe if files are missing during testing
+            return {} 
 
     def verify_pin(self, pin):
         return self.pin == pin
@@ -51,3 +50,31 @@ class SikaPayWallet:
         return True, (f"GHS {amount:.1f} has been sent successfully to {recipient}, "
                       f"with E-levy charge of GHS {e_levy:.1f} Service charge: GHS {service_charge:.1f}\n"
                       f"New balance: GHS {self.balance:.1f}")
+
+    def momo_pay(self, merchant_id, amount, pin):
+        if not self.verify_pin(pin):
+            return False, "Invalid PIN."
+        if merchant_id not in self.merchants:
+            return False, "Merchant not found."
+            
+        e_levy = amount * 0.01
+        total_deduction = amount + e_levy
+        
+        if self.balance < total_deduction:
+            return False, "Insufficient funds."
+            
+        self.balance -= total_deduction
+        merchant = self.merchants[merchant_id]
+        self.record_tx("MOMO Pay", amount, e_levy, "Success", merchant)
+        return True, (f"GHS {amount:.1f} has been paid successfully to {merchant}, "
+                      f"with E-levy charge of GHS {e_levy:.1f}. New balance: GHS {self.balance:.1f}")
+
+    def buy_flexi_bundle(self, amount):
+        if self.balance < amount:
+            return False, "Insufficient funds."
+            
+        self.balance -= amount
+        data_mb = (amount / 0.01786) + (amount * 0.05) 
+        
+        self.record_tx("Flexi-Bundle", amount, 0.0, "Success", "Self")
+        return True, f"{data_mb:.1f} MB Data Bundle successfully purchased.\nNew balance: GHS {self.balance:.1f}"
