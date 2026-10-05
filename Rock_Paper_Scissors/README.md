@@ -14,13 +14,8 @@ It's you against the computer in a "Best of 5" match (first to 3 points wins).
 - Real-time score and round tracking.
 - Modular code architecture separating game logic from GUI rendering.
 
-## Technologies Used
-- Python 3
-- Tkinter Library
-- Random Library (CPU logic)
-
 ## How to Run It
-1. Ensure Python 3.x is installed on your machine.
+1. Ensure Python 3.9 or higher is installed on your machine.
 2. Clone this repository.
 3. Run the script from your terminal:
    `python rock_paper_scissors.py`
