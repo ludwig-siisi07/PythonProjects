@@ -3,7 +3,7 @@ from tkinter import messagebox
 import secrets
 import string
 
-# --- CORE LOGIC ---
+# CORE LOGIC 
 def generate_secure_password(length, use_upper, use_lower, use_digits, use_specials):
     pool = ""
     guaranteed = []
@@ -37,7 +37,7 @@ def evaluate_strength(password):
     if len(password) >= 8: return "Medium", "orange"
     return "Weak", "red"
 
-# --- GUI ---
+# GUI
 class PasswordGeneratorApp:
     def __init__(self, root):
         self.root = root
@@ -81,7 +81,7 @@ class PasswordGeneratorApp:
         tk.Button(btn_frame, text="Reset", command=self.reset_app, fg="red").pack(side=tk.LEFT, padx=5)
 
     def handle_generate(self):
-        # Now uses robust try/except validation
+        # try/except validation
         try:
             length_str = self.length_var.get()
             if not length_str.isdigit():
